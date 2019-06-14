@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_news_watch/common/dao/NewsDao.dart';
-import 'package:flutter_news_watch/common/dao/SourcesDao.dart';
 import 'package:flutter_news_watch/common/model/TopHeadlines.dart';
-import 'package:flutter_news_watch/common/model/Source.dart';
 import 'package:flutter_news_watch/detail.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Home extends StatefulWidget {
 	static final String rName = 'home';
@@ -14,10 +13,13 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 	TabController _tabController;
 	TopHeadlines _topHeadlines;
 	List<Tab> defaultTabs = <Tab>[
-		Tab(text: 'Default'),
+		Tab(text: 'Business'),
+		Tab(text: 'Entertainment'),
+		Tab(text: 'General'),
+		Tab(text: 'Health'),
+		Tab(text: 'Science'),
 		Tab(text: 'Sports'),
-		Tab(text: 'Finance'),
-		Tab(text: 'Social'),
+		Tab(text: 'Technology',)
 	];
 
 	void getAllHeadLines() async {
@@ -32,28 +34,11 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 		});
 	}
 
-	void getSources() async {
-		SourcesDao.getSources().then((res) {
-			if (res.status) {
-				for(int i = 0; i < 5; i++) {
-					setState(() {
-						print(res.data.sources[i].name);
-						defaultTabs.add(Tab(text: res.data.sources[i].name));
-					});
-				}
-				_tabController = TabController(length: defaultTabs.length, vsync: this);
-			}
-			print(res.status);
-			print(res.data.sources.length);
-		});
-	}
-
 	@override
 	void initState() {
-		super.initState();
 		_tabController = TabController(length: defaultTabs.length, vsync: this);
-//		this.getSources();
 		this.getAllHeadLines();
+		super.initState();
 	}
 
 	@override
@@ -112,7 +97,20 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 					controller: _tabController,
 					children: defaultTabs.map((Tab tab) {
 						if (_topHeadlines == null) {
-							return Text('Hello');
+							return Center(
+								child: Column(
+									mainAxisAlignment: MainAxisAlignment.center,
+									children: <Widget>[
+										SpinKitDoubleBounce(
+											color: Theme.of(context).primaryColor,
+											size: 50.0,
+										),
+										Text(
+											'Loading'
+										)
+									],
+								),
+							);
 						} else {
 							return ListView.builder(
 								padding: EdgeInsets.all(12.0),
