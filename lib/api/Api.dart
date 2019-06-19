@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'dart:collection';
-import 'package:http/http.dart' as http;
 import 'package:flutter_news_watch/api/Code.dart';
 import 'package:flutter_news_watch/api/ResultData.dart';
 import 'package:flutter_news_watch/common/config/Config.dart';
@@ -40,6 +39,8 @@ class HttpManager {
 			);
 			option.headers = headers;
 		}
+		params["apiKey"] = Config.API_KEY;
+		print(params.toString());
 		option.connectTimeout = 15000;
 		Dio dio = new Dio();
 		Response response;

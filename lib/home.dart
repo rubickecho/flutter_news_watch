@@ -3,6 +3,7 @@ import 'package:flutter_news_watch/common/dao/NewsDao.dart';
 import 'package:flutter_news_watch/common/model/TopHeadlines.dart';
 import 'package:flutter_news_watch/detail.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class Home extends StatefulWidget {
 	static final String rName = 'home';
@@ -12,18 +13,14 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 	TabController _tabController;
 	TopHeadlines _topHeadlines;
-	List<Tab> defaultTabs = <Tab>[
-		Tab(text: 'Business'),
-		Tab(text: 'Entertainment'),
-		Tab(text: 'General'),
-		Tab(text: 'Health'),
-		Tab(text: 'Science'),
-		Tab(text: 'Sports'),
-		Tab(text: 'Technology',)
-	];
+	List<String> categorys = ['Business', 'Entertainment', 'General', 'Health', 'Science', 'Sports', 'Technology'];
+	List<Tab> defaultTabs = [];
 
-	void getAllHeadLines() async {
-		NewsDao.getAllHeadLines().then((res) {
+	void getAllHeadLines(String category) async {
+		NewsDao.getAllHeadLines({
+			"country": 'us',
+			"category": category
+		}).then((res) {
 			if (res.status) {
 				setState(() {
 					_topHeadlines = res.data;
@@ -36,8 +33,13 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
 	@override
 	void initState() {
+		setState(() {
+			for(int i = 0; i < categorys.length; i++) {
+				defaultTabs.add(Tab(text: categorys[i]));
+			}
+		});
 		_tabController = TabController(length: defaultTabs.length, vsync: this);
-		this.getAllHeadLines();
+		this.getAllHeadLines(categorys.first);
 		super.initState();
 	}
 
@@ -46,28 +48,6 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 		_tabController.dispose();
 		super.dispose();
 	}
-
-	void _showModalBottomSheet(BuildContext context, String content) {
-		showModalBottomSheet(
-			context: context,
-			builder: (context) => Material(
-				clipBehavior: Clip.antiAlias,
-				child: Container(
-					height: 700,
-					child: Column(
-						mainAxisAlignment: MainAxisAlignment.spaceAround,
-						mainAxisSize: MainAxisSize.max,
-						children: <Widget>[
-							Expanded(
-								child: Detail(content)
-							),
-						],
-					),
-				)
-			)
-		);
-	}
-
 
 	Widget build(BuildContext context) {
 		return Scaffold(
@@ -89,7 +69,10 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 					tabs: defaultTabs,
 					isScrollable: true,
 					indicatorColor: Colors.white,
-					indicatorWeight: 3.0
+					indicatorWeight: 3.0,
+					onTap: (index) {
+						this.getAllHeadLines(categorys[index]);
+					},
 				),
 			),
 			body: Container(
@@ -123,22 +106,32 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 										),
 										child: InkWell(
 											onTap: () {
+												Navigator.of(context).push(new PageRouteBuilder(
+													pageBuilder: (BuildContext context, Animation<double> animation,
+														Animation<double> secondaryAnimation) {
+														return new Detail(_topHeadlines.articles[index].title, _topHeadlines.articles[index].url);
+													}
+												));
 												print('click');
-												_showModalBottomSheet(context, _topHeadlines.articles[index].url);
+//												_showModalBottomSheet(context, _topHeadlines.articles[index].url);
 											},
 											child: Column(
 												children: <Widget>[
 													Container(
 														height: 140,
 														color: Colors.green,
-														child: new Image(
-															fit: BoxFit.fill,
-															image: _topHeadlines.articles[index].urlToImage != null ? NetworkImage(
-																_topHeadlines.articles[index].urlToImage
-															) : AssetImage(
-																'assets/images/news_presenter.png'
-															),
-														)
+														child: new FadeInImage.memoryNetwork(
+															placeholder: kTransparentImage,
+															image: _topHeadlines.articles[index].urlToImage != null ? _topHeadlines.articles[index].urlToImage : 'assets/images/news_presenter.png'
+														),
+//														child: new Image(
+//															fit: BoxFit.fill,
+//															image: _topHeadlines.articles[index].urlToImage != null ? NetworkImage(
+//																_topHeadlines.articles[index].urlToImage
+//															) : AssetImage(
+//																'assets/images/news_presenter.png'
+//															),
+//														)
 													),
 													Padding(
 														padding: EdgeInsets.all(8),

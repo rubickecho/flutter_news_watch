@@ -4,7 +4,7 @@ class ApiMap {
 
 	///This endpoint provides live top and breaking headlines for a country, specific category in a country, single source, or multiple sources. You can also search with keywords. Articles are sorted by the earliest date published first.
 	static getAllHeadLines () {
-		return Config.API_BASE_URL + '/v2/top-headlines?country=us&apiKey=' + Config.API_KEY;
+		return Config.API_BASE_URL + '/v2/top-headlines';
 	}
 
 	///This endpoint returns the subset of news publishers that top headlines (/v2/top-headlines) are available from. It's mainly a convenience endpoint that you can use to keep track of the publishers available on the API, and you can pipe it straight through to your users.
