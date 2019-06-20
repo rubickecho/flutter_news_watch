@@ -9,9 +9,9 @@
 
 </p>
 
-## Snapshot
+## Screenshots
 
-
+<img src="https://github.com/peakcool/flutter_news_watch/screeshots/main.png" width="240" height="390">
 
 ## Getting Started
 
