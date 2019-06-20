@@ -10,8 +10,7 @@ class HttpManager {
 	static const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 	static Map optionParams = {
 		"timeoutMs": 15000,
-		"token": null,
-//		"authorizationCode": Config.APP_CODE
+		"token": null
 	};
 
 	static netFetch(url, params, Map<String, String> header, Options option, {noTip = false}) async {
@@ -28,8 +27,6 @@ class HttpManager {
 			headers.addAll(headers);
 		}
 
-//		headers["Authorization"] = "APPCODE " + optionParams["authorizationCode"]; //“APPCODE ＋ 半角空格 ＋APPCODE值”
-
 		//设置参数配置
 		if (option != null) {
 			option.headers = headers;
@@ -39,7 +36,6 @@ class HttpManager {
 			);
 			option.headers = headers;
 		}
-		params["apiKey"] = Config.API_KEY;
 		print(params.toString());
 		option.connectTimeout = 15000;
 		Dio dio = new Dio();

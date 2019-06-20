@@ -6,8 +6,8 @@ import 'package:flutter_news_watch/common/model/ErrorEntity.dart';
 
 class NewsDao {
 
-	static getAllHeadLines(Map<String, dynamic> params) async {
-		var res = await HttpManager.netFetch(ApiMap.getAllHeadLines(), params, null, null);
+	static getAllHeadLines(String params) async {
+		var res = await HttpManager.netFetch(ApiMap.getAllHeadLines(params), params, null, null);
 		if (res != null) {
 			if (res.data["status"] == 'ok') {
 				TopHeadlines json = TopHeadlines.fromJson(res.data);

@@ -4,6 +4,7 @@ import 'package:flutter_news_watch/common/model/TopHeadlines.dart';
 import 'package:flutter_news_watch/detail.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
 	static final String rName = 'home';
@@ -17,17 +18,12 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 	List<Tab> defaultTabs = [];
 
 	void getAllHeadLines(String category) async {
-		NewsDao.getAllHeadLines({
-			"country": 'us',
-			"category": category
-		}).then((res) {
+		NewsDao.getAllHeadLines(category).then((res) {
 			if (res.status) {
 				setState(() {
 					_topHeadlines = res.data;
 				});
 			}
-			print(res.status);
-			print(res.data.articles.length);
 		});
 	}
 
@@ -52,7 +48,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
-				title: Text('News'),
+				title: Text('News Watch'),
 				actions: <Widget>[
 					IconButton(
 						icon: Icon(
@@ -71,6 +67,10 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 					indicatorColor: Colors.white,
 					indicatorWeight: 3.0,
 					onTap: (index) {
+						setState(() {
+							TopHeadlines empty;
+							_topHeadlines = empty;
+						});
 						this.getAllHeadLines(categorys[index]);
 					},
 				),
@@ -112,26 +112,19 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 														return new Detail(_topHeadlines.articles[index].title, _topHeadlines.articles[index].url);
 													}
 												));
-												print('click');
-//												_showModalBottomSheet(context, _topHeadlines.articles[index].url);
 											},
 											child: Column(
+												mainAxisSize: MainAxisSize.max,
 												children: <Widget>[
 													Container(
 														height: 140,
-														color: Colors.green,
+														color: Colors.grey[200],
 														child: new FadeInImage.memoryNetwork(
+															width: double.infinity,
+															fit: BoxFit.fitWidth,
 															placeholder: kTransparentImage,
 															image: _topHeadlines.articles[index].urlToImage != null ? _topHeadlines.articles[index].urlToImage : 'assets/images/news_presenter.png'
 														),
-//														child: new Image(
-//															fit: BoxFit.fill,
-//															image: _topHeadlines.articles[index].urlToImage != null ? NetworkImage(
-//																_topHeadlines.articles[index].urlToImage
-//															) : AssetImage(
-//																'assets/images/news_presenter.png'
-//															),
-//														)
 													),
 													Padding(
 														padding: EdgeInsets.all(8),
@@ -157,7 +150,13 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 																	),
 																),
 																Text(
-																	_topHeadlines.articles[index].publishedAt,
+																	(DateFormat.MMMMEEEEd().format(
+																		_topHeadlines.articles[index].publishedAt
+																			.toLocal()) +
+																		" " +
+																		DateFormat.jm().format(
+																			_topHeadlines.articles[index].publishedAt
+																				.toLocal())),
 																	style: TextStyle(
 																		fontSize: 12,
 																		color: Colors.grey
